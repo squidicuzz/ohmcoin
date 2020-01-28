@@ -173,3 +173,12 @@ src/ohmcoin-cli
 src/ohmcoin-tx
 src/ohmcoind
 doc/Doxyfile
+conftest.dir/sub/conftst6.h
+conftest.dir/sub/conftst5.h
+conftest.dir/sub/conftst4.h
+conftest.dir/sub/conftst3.h
+conftest.dir/sub/conftst2.h
+conftest.dir/sub/conftst1.h
+conftest.dir/sub/conftest.c
+conftest.dir/depcomp
+conftest.dir/confmf

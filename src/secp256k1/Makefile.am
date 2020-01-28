@@ -1,5 +1,7 @@
 ACLOCAL_AMFLAGS = -I build-aux/m4
 
+CC_FOR_BUILD = gcc
+
 lib_LTLIBRARIES = libsecp256k1.la
 if USE_ASM
 COMMON_LIB = libsecp256k1_common.la
@@ -7,6 +9,7 @@ else
 COMMON_LIB =
 endif
 noinst_LTLIBRARIES = $(COMMON_LIB)
+lib_LTLIBRARIES = libsecp256k1.la
 include_HEADERS = include/secp256k1.h
 noinst_HEADERS =
 noinst_HEADERS += src/scalar.h
