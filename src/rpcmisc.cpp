@@ -18,8 +18,8 @@
 #include "timedata.h"
 #include "util.h"
 #ifdef ENABLE_WALLET
-#include "wallet.h"
-#include "walletdb.h"
+#include "wallet/wallet.h"
+#include "wallet/walletdb.h"
 #endif
 
 #include <stdint.h>
@@ -127,7 +127,7 @@ UniValue getinfo(const UniValue& params, bool fHelp)
     }
     zohmcObj.push_back(Pair("total", ValueFromAmount(chainActive.Tip()->GetZerocoinSupply())));
     obj.push_back(Pair("zOHMCsupply", zohmcObj));
-    
+
 #ifdef ENABLE_WALLET
     if (pwalletMain) {
         obj.push_back(Pair("keypoololdest", pwalletMain->GetOldestKeyPoolTime()));
@@ -404,6 +404,13 @@ UniValue validateaddress(const UniValue& params, bool fHelp)
         ret.pushKVs(detail);
         if (pwalletMain && pwalletMain->mapAddressBook.count(dest))
             ret.push_back(Pair("account", pwalletMain->mapAddressBook[dest].name));
+                CKeyID keyID;
+        CHDChain hdChainCurrent;
+        if (pwalletMain && pwalletMain->mapHdPubKeys.count(keyID))
+        {
+            ret.push_back(Pair("hdkeypath", pwalletMain->mapHdPubKeys[keyID].GetKeyPath()));
+            ret.push_back(Pair("hdmasterkeyid", hdChainCurrent.GetID().GetHex()));
+        }
 #endif
     }
     return ret;
@@ -576,7 +583,7 @@ UniValue verifymessage(const UniValue& params, bool fHelp)
     if (!IsValidDestinationString(strAddress))
 
         throw JSONRPCError(RPC_TYPE_ERROR, "Invalid address");
-    
+
     CTxDestination addr = DecodeDestination(strAddress);
 
     CKeyID *keyID = boost::get<CKeyID>(&addr);

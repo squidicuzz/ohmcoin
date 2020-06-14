@@ -6,7 +6,7 @@
 #include "keystore.h"
 
 #include "crypter.h"
-#include "key.h"
+#include "wallet/key.h"
 #include "script/script.h"
 #include "script/standard.h"
 #include "util.h"
@@ -145,6 +145,12 @@ bool CBasicKeyStore::HaveWatchOnly() const
 {
     LOCK(cs_KeyStore);
     return (!setWatchOnly.empty());
+}
+
+bool CBasicKeyStore::GetHDChain(CHDChain& hdChainRet) const
+{
+    hdChainRet = hdChain;
+    return !hdChain.IsNull();
 }
 
 bool CBasicKeyStore::AddMultiSig(const CScript& dest)

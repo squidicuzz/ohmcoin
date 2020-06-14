@@ -45,15 +45,11 @@ class ErrorMatch(Enum):
 
 class TestNode():
     """A class for representing a bitcoind node under test.
-
     This class contains:
-
     - state about the node (whether it's running, etc)
     - a Python subprocess.Popen object representing the running process
     - an RPC connection to the node
     - one or more P2P connections to the node
-
-
     To make things easier for the test writer, any unrecognised messages will
     be dispatched to the RPC connection."""
 
@@ -68,7 +64,7 @@ class TestNode():
             # Wait for up to 60 seconds for the RPC server to respond
             self.rpc_timeout = 60
         if binary is None:
-            self.binary = os.getenv("OHMCOIND", "ohmcoind")
+            self.binary = os.getenv("PHORED", "phored")
         else:
             self.binary = binary
         self.stderr = stderr
@@ -82,7 +78,7 @@ class TestNode():
         self.args = [self.binary, "-datadir=" + self.datadir, "-logtimemicros", "-debug", "-debugexclude=libevent", "-debugexclude=leveldb", "-mocktime=" + str(mocktime), "-uacomment=testnode%d" % i]
         #print(self.args)
 
-        self.cli = TestNodeCLI(os.getenv("OHMCOINCLI", "ohmcoin-cli"), self.datadir)
+        self.cli = TestNodeCLI(os.getenv("PHORECLI", "phore-cli"), self.datadir)
         self.use_cli = use_cli
 
         self.running = False
@@ -126,7 +122,7 @@ class TestNode():
         #print("=====", self.args + extra_args)
         self.process = subprocess.Popen(self.args + extra_args, stderr=stderr, *args, **kwargs)
         self.running = True
-        self.log.debug("ohmcoind started, waiting for RPC to come up")
+        self.log.debug("phored started, waiting for RPC to come up")
 
     def wait_for_rpc_connection(self):
         """Sets up an RPC connection to the bitcoind process. Returns False if unable to connect."""
@@ -134,7 +130,7 @@ class TestNode():
         poll_per_s = 4
         for _ in range(poll_per_s * self.rpc_timeout):
             if self.process.poll() is not None:
-                raise FailedToStartError('ohmcoind exited with status {} during initialization'.format(self.process.returncode))
+                raise FailedToStartError('phored exited with status {} during initialization'.format(self.process.returncode))
             try:
                 self.rpc = get_rpc_proxy(rpc_url(self.datadir, self.index, self.rpchost), self.index, timeout=self.rpc_timeout, coveragedir=self.coverage_dir)
                 self.rpc.getblockcount()
@@ -154,7 +150,7 @@ class TestNode():
                 if "No RPC credentials" not in str(e):
                     raise
             time.sleep(1.0 / poll_per_s)
-        raise AssertionError("Unable to connect to ohmcoind")
+        raise AssertionError("Unable to connect to phored")
 
     def get_wallet_rpc(self, wallet_name):
         if self.use_cli:
@@ -178,7 +174,6 @@ class TestNode():
 
     def is_node_stopped(self):
         """Checks whether the node has stopped.
-
         Returns True if the node has stopped. False otherwise.
         This method is responsible for freeing resources (self.process)."""
         if not self.running:
@@ -201,10 +196,8 @@ class TestNode():
 
     def assert_start_raises_init_error(self, extra_args=None, expected_msg=None, match=ErrorMatch.FULL_TEXT, *args, **kwargs):
         """Attempt to start the node and expect it to raise an error.
-
         extra_args: extra arguments to pass through to bitcoind
         expected_msg: regex that stderr should match when bitcoind fails
-
         Will throw if bitcoind starts without an error.
         Will throw if an expected_msg is provided and it does not match bitcoind's stdout."""
         with tempfile.SpooledTemporaryFile(max_size=2**16) as log_stderr:
@@ -214,7 +207,7 @@ class TestNode():
                 self.stop_node()
                 self.wait_until_stopped()
             except FailedToStartError as e:
-                self.log.debug('ohmcoind failed to start: %s', e)
+                self.log.debug('phored failed to start: %s', e)
                 self.running = False
                 self.process = None
                 # Check stderr for expected message
@@ -232,22 +225,20 @@ class TestNode():
                             raise AssertionError('Expected message "{}" does not fully match stderr:\n"{}"'.format(expected_msg, stderr))
             else:
                 if expected_msg is None:
-                    assert_msg = "ohmcoind should have exited with an error"
+                    assert_msg = "phored should have exited with an error"
                 else:
-                    assert_msg = "ohmcoind should have exited with expected error " + expected_msg
+                    assert_msg = "phored should have exited with expected error " + expected_msg
                 raise AssertionError(assert_msg)
 
     def node_encrypt_wallet(self, passphrase):
         """"Encrypts the wallet.
-
-        This causes ohmcoind to shutdown, so this method takes
+        This causes phored to shutdown, so this method takes
         care of cleaning up resources."""
         self.encryptwallet(passphrase)
         self.wait_until_stopped()
 
     def add_p2p_connection(self, p2p_conn, *args, **kwargs):
         """Add a p2p connection to the node.
-
         This method adds the p2p connection to the self.p2ps list and also
         returns the connection to the caller."""
         if 'dstport' not in kwargs:
@@ -263,7 +254,6 @@ class TestNode():
     @property
     def p2p(self):
         """Return the first p2p connection
-
         Convenience property - most tests only use a single p2p connection to each
         node, so this saves having to write node.p2ps[0] many times."""
         assert self.p2ps, "No p2p connection"

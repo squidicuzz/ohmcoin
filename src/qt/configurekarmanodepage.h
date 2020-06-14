@@ -7,7 +7,7 @@
 #define BITCOIN_QT_CONFIGUREKARMANODEPAGE_H
 
 #include "karmanodelist.h"
-#include "wallet.h"
+#include "wallet/wallet.h"
 
 #include <QAbstractButton>
 #include <QAction>

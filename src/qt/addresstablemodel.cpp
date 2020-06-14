@@ -10,7 +10,7 @@
 #include "walletmodel.h"
 
 #include "base58.h"
-#include "wallet.h"
+#include "wallet/wallet.h"
 
 #include <QDebug>
 #include <QFont>
@@ -141,7 +141,7 @@ public:
             break;
         }
     }
-    
+
     void updateEntry(const QString &pubCoin, const QString &isUsed, int status)
     {
         // Find address / label in model
@@ -152,7 +152,7 @@ public:
         int lowerIndex = (lower - cachedAddressTable.begin());
         bool inModel = (lower != upper);
         AddressTableEntry::Type newEntryType = AddressTableEntry::Zerocoin;
-        
+
         switch(status)
         {
             case CT_NEW:
@@ -175,7 +175,7 @@ public:
                 parent->emitDataChanged(lowerIndex);
                 break;
         }
-        
+
     }
 
 
@@ -383,14 +383,14 @@ QString AddressTableModel::addRow(const QString& type, const QString& label, con
     } else if (type == Receive) {
         // Generate a new address to associate with given label
         CPubKey newKey;
-        if (!wallet->GetKeyFromPool(newKey)) {
+        if (!wallet->GetKeyFromPool(newKey, false)) {
             WalletModel::UnlockContext ctx(walletModel->requestUnlock(true));
             if (!ctx.isValid()) {
                 // Unlock wallet failed or was cancelled
                 editStatus = WALLET_UNLOCK_FAILURE;
                 return QString();
             }
-            if (!wallet->GetKeyFromPool(newKey)) {
+            if (!wallet->GetKeyFromPool(newKey, false)) {
                 editStatus = KEY_GENERATION_FAILURE;
                 return QString();
             }

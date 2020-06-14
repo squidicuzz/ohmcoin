@@ -16,7 +16,7 @@
 #include "karmanodeconfig.h"
 #include "karmanodeman.h"
 #include "sync.h"
-#include "wallet.h"
+#include "wallet/wallet.h"
 #include "walletmodel.h"
 #include "util.h"
 

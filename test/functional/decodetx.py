@@ -3,7 +3,6 @@ import struct
 
 WITNESS = 1
 
-from test_framework.script import *
 
 class RawTransaction:
     def __init__(self, tx_data):
@@ -116,6 +115,6 @@ def deserialize_transaction(transaction):
         tx["flags"] ^= 1
         tx["witness"] = deserialize_witness(transaction, len(tx["vtxin"]))
     return tx
-    
+
 
 print(deserialize_transaction(transaction_data))

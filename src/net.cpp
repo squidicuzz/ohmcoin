@@ -23,7 +23,7 @@
 #include "protocol.h"
 #include "scheduler.h"
 #include "ui_interface.h"
-#include "wallet.h"
+#include "wallet/wallet.h"
 
 #ifdef WIN32
 #include <string.h>
