@@ -37,20 +37,20 @@ OSX_QT_TRANSLATIONS = da,de,es,hu,ru,uk,zh_CN,zh_TW
 DIST_DOCS = $(wildcard doc/*.md) $(wildcard doc/release-notes/*.md)
 
 WINDOWS_PACKAGING = $(top_srcdir)/share/pixmaps/bitcoin.ico \
-  $(top_srcdir)/share/pixmaps/nsis-header.bmp \
-  $(top_srcdir)/share/pixmaps/nsis-wizard.bmp \
-  $(top_srcdir)/doc/README_windows.txt
+	$(top_srcdir)/share/pixmaps/nsis-header.bmp \
+	$(top_srcdir)/share/pixmaps/nsis-wizard.bmp \
+	$(top_srcdir)/doc/README_windows.txt
 
 OSX_PACKAGING = $(OSX_DEPLOY_SCRIPT) $(OSX_FANCY_PLIST) $(OSX_INSTALLER_ICONS) \
-  $(top_srcdir)/contrib/macdeploy/$(OSX_BACKGROUND_SVG) \
-  $(OSX_DSSTORE_GEN) \
-  $(top_srcdir)/contrib/macdeploy/detached-sig-apply.sh \
-  $(top_srcdir)/contrib/macdeploy/detached-sig-create.sh
+	$(top_srcdir)/contrib/macdeploy/$(OSX_BACKGROUND_SVG) \
+	$(OSX_DSSTORE_GEN) \
+	$(top_srcdir)/contrib/macdeploy/detached-sig-apply.sh \
+	$(top_srcdir)/contrib/macdeploy/detached-sig-create.sh
 
 COVERAGE_INFO = baseline_filtered_combined.info baseline.info block_test.info \
-  leveldb_baseline.info test_ohmcoin_filtered.info total_coverage.info \
-  baseline_filtered.info block_test_filtered.info \
-  leveldb_baseline_filtered.info test_ohmcoin_coverage.info test_ohmcoin.info
+	leveldb_baseline.info test_ohmcoin_filtered.info total_coverage.info \
+	baseline_filtered.info block_test_filtered.info \
+	leveldb_baseline_filtered.info test_ohmcoin_coverage.info test_ohmcoin.info
 
 dist-hook:
 	-$(MAKE) -C $(top_distdir)/src/leveldb clean
@@ -71,7 +71,7 @@ $(BITCOIN_WIN_INSTALLER): all-recursive
 	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(BITCOIN_QT_BIN) $(top_builddir)/release
 	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM) $(BITCOIN_CLI_BIN) $(top_builddir)/release
 	@test -f $(MAKENSIS) && $(MAKENSIS) -V2 $(top_builddir)/share/setup.nsi || \
-	  echo error: could not build $@
+		echo error: could not build $@
 	@echo built $@
 
 $(OSX_APP)/Contents/PkgInfo:
@@ -92,15 +92,15 @@ $(OSX_APP)/Contents/Resources/bitcoin.icns: $(OSX_INSTALLER_ICONS)
 
 $(OSX_APP)/Contents/MacOS/Ohmcoin-Qt: $(BITCOIN_QT_BIN)
 	$(MKDIR_P) $(@D)
-	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM)  $< $@
+	STRIPPROG="$(STRIP)" $(INSTALL_STRIP_PROGRAM)	$< $@
 
 $(OSX_APP)/Contents/Resources/Base.lproj/InfoPlist.strings:
 	$(MKDIR_P) $(@D)
-	echo '{	CFBundleDisplayName = "$(PACKAGE_NAME)"; CFBundleName = "$(PACKAGE_NAME)"; }' > $@
+	echo '{ CFBundleDisplayName = "$(PACKAGE_NAME)"; CFBundleName = "$(PACKAGE_NAME)"; }' > $@
 
 OSX_APP_BUILT=$(OSX_APP)/Contents/PkgInfo $(OSX_APP)/Contents/Resources/empty.lproj \
-  $(OSX_APP)/Contents/Resources/bitcoin.icns $(OSX_APP)/Contents/Info.plist \
-  $(OSX_APP)/Contents/MacOS/Ohmcoin-Qt $(OSX_APP)/Contents/Resources/Base.lproj/InfoPlist.strings
+	$(OSX_APP)/Contents/Resources/bitcoin.icns $(OSX_APP)/Contents/Info.plist \
+	$(OSX_APP)/Contents/MacOS/Ohmcoin-Qt $(OSX_APP)/Contents/Resources/Base.lproj/InfoPlist.strings
 
 osx_volname:
 	echo $(OSX_VOLNAME) >$@
@@ -141,7 +141,7 @@ $(APP_DIST_DIR)/.DS_Store: $(OSX_DSSTORE_GEN)
 	$(PYTHON) $< "$@" "$(OSX_VOLNAME)"
 
 $(APP_DIST_DIR)/$(OSX_APP)/Contents/MacOS/Ohmcoin-Qt: $(OSX_APP_BUILT) $(OSX_PACKAGING)
-	INSTALLNAMETOOL=$(INSTALLNAMETOOL)  OTOOL=$(OTOOL) STRIP=$(STRIP) $(PYTHON) $(OSX_DEPLOY_SCRIPT) $(OSX_APP) -translations-dir=$(QT_TRANSLATION_DIR) -add-qt-tr $(OSX_QT_TRANSLATIONS) -verbose 2
+	INSTALLNAMETOOL=$(INSTALLNAMETOOL) OTOOL=$(OTOOL) STRIP=$(STRIP) $(PYTHON) $(OSX_DEPLOY_SCRIPT) $(OSX_APP) -translations-dir=$(QT_TRANSLATION_DIR) -add-qt-tr $(OSX_QT_TRANSLATIONS) -verbose 2
 
 deploydir: $(APP_DIST_EXTRAS)
 endif
@@ -202,10 +202,10 @@ block_test_filtered.info: block_test.info
 test_ohmcoin_coverage.info: baseline_filtered_combined.info test_ohmcoin_filtered.info
 	$(LCOV) -a baseline_filtered.info -a leveldb_baseline_filtered.info -a test_ohmcoin_filtered.info -o $@
 
-total_coverage.info:  baseline_filtered_combined.info test_ohmcoin_filtered.info block_test_filtered.info
+total_coverage.info: baseline_filtered_combined.info test_ohmcoin_filtered.info block_test_filtered.info
 	$(LCOV) -a baseline_filtered.info -a leveldb_baseline_filtered.info -a test_ohmcoin_filtered.info -a block_test_filtered.info -o $@ | $(GREP) "\%" | $(AWK) '{ print substr($$3,2,50) "/" $$5 }' > coverage_percent.txt
 
-test_ohmcoin.coverage/.dirstamp:  test_ohmcoin_coverage.info
+test_ohmcoin.coverage/.dirstamp: test_ohmcoin_coverage.info
 	$(GENHTML) -s $< -o $(@D)
 	@touch $@
 
