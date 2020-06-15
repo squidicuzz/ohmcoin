@@ -49,7 +49,7 @@ enum DBErrors {
     DB_NEED_REWRITE
 };
 
-class CKeyMetadata
+class CKeyMetadata;
 
 // todo: remove this later
 /* simple hd chain data model
